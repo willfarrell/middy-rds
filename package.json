@@ -1,0 +1,44 @@
+{
+  "name": "middy-rds",
+  "version": "2.0.0-alpha.0",
+  "description": "Simple RDS manager for the middy framework",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=12"
+  },
+  "engineStrict": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "ava"
+  },
+  "license": "MIT",
+  "keywords": [
+    "Lambda",
+    "Middleware",
+    "Serverless",
+    "Framework",
+    "AWS",
+    "AWS Lambda",
+    "RDS",
+    "knex"
+  ],
+  "author": {
+    "name": "Contributors",
+    "url": "https://github.com/willfarrell/middy-rds/graphs/contributors"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willfarrell/middy-rds.git"
+  },
+  "bugs": {
+    "url": "https://github.com/willfarrell/middy-rds/issues"
+  },
+  "homepage": "https://github.com/willfarrell/middy-rds#readme",
+  "dependencies": {
+    "knex": "0.21.13",
+    "@middy/core": "2.0.0-alpha.0"
+  },
+  "gitHead": "7a6c0fbb8ab71d6a2171e678697de9f237568431"
+}
