@@ -53,21 +53,21 @@ npm install --save middy-rds
 Requires: @middy/core:2.0.0
 
 ## Options
-
+- `client` (optional): client that you want to use when connecting to database of your choice. By default knex.js is used but as long as your client is run as client(config) or you create wrapper to conform, you can use other tools.
 - `config`: configuration object passed as is to client (knex.js by default), for more details check [knex documentation](http://knexjs.org/#Installation-client)
-- `internalData` (optional): Pull values from middy internal storage into connection object
+- `internalData` (optional): Pull values from middy internal storage into `config.connection` object.
 - `cacheKey` (string) (default `db`): Internal cache key for the db connection.
 - `cacheExpiry` (number) (default `-1`): How long fetch data responses should be cached for. `-1`: cache forever, `0`: never cache, `n`: cache for n ms.
 
 
-Note:
+**Note:**
 - `config.connection` defaults to:
 
 ```json
 {
   ssl: {
     rejectUnauthorized: true,
-    ca,
+    ca, // rds-ca-2019-root.pem
     checkServerIdentity: (host, cert) => {
       const error = tls.checkServerIdentity(host, cert)
        if (error && !cert.subject.CN.endsWith('.rds.amazonaws.com')) {
@@ -78,6 +78,8 @@ Note:
   }
 }
 ```
+
+If you're lambda is timing out, likely your database connections are keeping the event loop open. Check out [do-not-wait-for-empty-event-loop](https://github.com/middyjs/middy/tree/master/packages/do-not-wait-for-empty-event-loop) middleware to resolve this.
 
 ## Sample usage
 
@@ -115,11 +117,6 @@ const handler = middy(async (event, context) => {
     }
   }))
 ```
-
-
-**Note:**
-
-If you're lambda is timing out, likely your database connections are keeping the event loop open. Check out [do-not-wait-for-empty-event-loop](https://github.com/middyjs/middy/tree/master/packages/do-not-wait-for-empty-event-loop) middleware to resolve this.
 
 
 ## Middy documentation and examples

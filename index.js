@@ -33,6 +33,7 @@ zPW4CXXvhLmE02TA9/HeCw3KEHIwicNuEfw=
 -----END CERTIFICATE-----`
 
 const defaults = {
+  client: knex,
   config: {},
   internalData: {},
   cacheKey: 'db',
@@ -61,7 +62,7 @@ module.exports = (opts = {}) => {
   const fetch = async (handler) => {
     const values = await getInternal(options.internalData, handler)
     options.config.connection = Object.assign({}, defaultConnection, options.config.connection, values)
-    const db = knex(options.config)
+    const db = client(options.config)
     db.raw('SELECT 1') // don't await, used to force open connection
 
     // cache the connection, not the credentials as they may change over time
