@@ -10,8 +10,8 @@
 
 <div align="center">
 <p>
-  <a href="http://badge.fury.io/js/%40middy%2Fdb-manager">
-    <img src="https://badge.fury.io/js/%40middy%2Fdb-manager.svg" alt="npm version" style="max-width:100%;">
+  <a href="http://badge.fury.io/js/%40willfarrell%2Fmiddy-rds">
+    <img src="https://badge.fury.io/js/%40willfarrell%2Fmiddy-rds.svg" alt="npm version" style="max-width:100%;">
   </a>
   <a href="https://snyk.io/test/github/willfarrell/middy-rds">
     <img src="https://snyk.io/test/github/willfarrell/middy-rds/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/willfarrell/middy-rds" style="max-width:100%;">
