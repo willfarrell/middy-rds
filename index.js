@@ -1,8 +1,6 @@
 const tls = require('tls')
 const { promisify } = require('util')
-const { getInternal, processCache } = require('../../middyjs/middy/packages/core/util.js')
-
-const knex = require('knex')
+const { getInternal, processCache, clearCache } = require('@middy/util')
 
 // RDS Public Cert
 // https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html
@@ -33,10 +31,10 @@ zPW4CXXvhLmE02TA9/HeCw3KEHIwicNuEfw=
 -----END CERTIFICATE-----`
 
 const defaults = {
-  client: knex,
+  client: undefined,
   config: {},
   internalData: {},
-  cacheKey: 'db',
+  cacheKey: 'rds',
   cacheExpiry: -1
 }
 
@@ -56,40 +54,44 @@ const defaultConnection = {
   }
 }
 
-module.exports = (opts = {}) => {
+const rdsMiddleware = (opts = {}) => {
   const options = Object.assign({}, defaults, opts)
+  if (!options.client) throw new Error('client option missing')
 
   const fetch = async (handler) => {
     const values = await getInternal(options.internalData, handler)
     options.config.connection = Object.assign({}, defaultConnection, options.config.connection, values)
-    const db = client(options.config)
+    const db = options.client(options.config)
     db.raw('SELECT 1') // don't await, used to force open connection
+      .catch(e => {
+        // Connection failed for some reason
+        // log and clear cache, force re-connect
+        console.error('middy-rds SELECT 1', e.message)
+        clearCache(Object.keys(options.internalData))
+        clearCache([options.cacheKey])
+      })
 
     // cache the connection, not the credentials as they may change over time
     return db
   }
 
-  const dbMiddlewareBefore = async (handler) => {
-    let db
-    try {
-      db = await processCache(options, fetch, handler)
-      const res = await db.raw('SELECT 1')
-      console.log('res', res)
-    } catch(e) {
-      console.log('catch',e.message)
-    }
-    Object.assign(handler.context, { db })
+  const rdsMiddlewareBefore = async (handler) => {
+    const {value}  = await processCache(options, fetch, handler)
+
+    Object.assign(handler.context, { db:value })
   }
-  const dbMiddlewareAfter = async (handler) => {
-    if (!options.cacheExpiry) {
-      await promisify(handler.context.knex.destroy)()
+  const rdsMiddlewareAfter = async (handler) => {
+    if (options.cacheExpiry === 0) {
+      await promisify(handler.context.db.destroy)()
     }
   }
-  const dbMiddlewareOnError = dbMiddlewareAfter
+  const rdsMiddlewareOnError = rdsMiddlewareAfter
 
   return {
-    before: dbMiddlewareBefore,
-    after: dbMiddlewareAfter,
-    onError: dbMiddlewareOnError
+    before: rdsMiddlewareBefore,
+    after: rdsMiddlewareAfter,
+    onError: rdsMiddlewareOnError
   }
 }
+
+module.exports = rdsMiddleware

@@ -25,7 +25,7 @@
 </p>
 </div>
 
-RDS provides seamless connection with database of your choice. Uses knex.js but you can use any tool that you want.
+RDS provides seamless connection with database of your choice.
 
 After initialization your database connection is accessible under:
 ```javascript
@@ -50,12 +50,12 @@ To install this middleware you can use NPM:
 npm install --save middy-rds
 ```
 
-Requires: @middy/core:2.0.0
+Requires: @middy/core:>=2.0.0
 
 ## Options
-- `client` (optional): client that you want to use when connecting to database of your choice. By default knex.js is used but as long as your client is run as client(config) or you create wrapper to conform, you can use other tools.
-- `config`: configuration object passed as is to client (knex.js by default), for more details check [knex documentation](http://knexjs.org/#Installation-client)
-- `internalData` (optional): Pull values from middy internal storage into `config.connection` object.
+- `client` (function) (required): client that you want to use when connecting to database of your choice. Designed to be used by knex.js. However, as long as your client is run as client(config), you can use other tools.
+- `config` (object) (required): configuration object passed as is to client (knex.js recommended), for more details check [knex documentation](http://knexjs.org/#Installation-client)
+- `internalData` (object) (optional): Pull values from middy internal storage into `config.connection` object.
 - `cacheKey` (string) (default `db`): Internal cache key for the db connection.
 - `cacheExpiry` (number) (default `-1`): How long fetch data responses should be cached for. `-1`: cache forever, `0`: never cache, `n`: cache for n ms.
 
@@ -63,16 +63,15 @@ Requires: @middy/core:2.0.0
 **Note:**
 - `config.connection` defaults to:
 
-```json
+```javascript
 {
   ssl: {
     rejectUnauthorized: true,
     ca, // rds-ca-2019-root.pem
     checkServerIdentity: (host, cert) => {
       const error = tls.checkServerIdentity(host, cert)
-       if (error && !cert.subject.CN.endsWith('.rds.amazonaws.com')) {
+      if (error && !cert.subject.CN.endsWith('.rds.amazonaws.com')) {
          return error
-       }
       }
     }
   }
@@ -106,6 +105,7 @@ const handler = middy(async (event, context) => {
     internalData: {
       password: 'rdsToken'
     },
+    client: knex,
     config: {
       client: 'pg',
       connection: {
