@@ -76,9 +76,9 @@ const rdsMiddleware = (opts = {}) => {
   }
 
   const rdsMiddlewareBefore = async (handler) => {
-    const {value}  = await processCache(options, fetch, handler)
+    const {value}  = processCache(options, fetch, handler)
 
-    Object.assign(handler.context, { db:value })
+    Object.assign(handler.context, { db: await value }) // await due to fetch being a promise
   }
   const rdsMiddlewareAfter = async (handler) => {
     if (options.cacheExpiry === 0) {
