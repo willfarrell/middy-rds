@@ -35,6 +35,7 @@ const defaults = {
   config: {},
   internalData: {},
   cacheKey: 'rds',
+  cachePasswordKey: 'rds',
   cacheExpiry: -1
 }
 
@@ -67,7 +68,7 @@ const rdsMiddleware = (opts = {}) => {
         // Connection failed for some reason
         // log and clear cache, force re-connect
         console.error('middy-rds SELECT 1', e.message)
-        clearCache(Object.keys(options.internalData))
+        clearCache([options.cachePasswordKey])
         clearCache([options.cacheKey])
       })
 

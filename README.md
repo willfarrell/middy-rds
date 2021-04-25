@@ -56,7 +56,8 @@ Requires: @middy/core:>=2.0.0
 - `client` (function) (required): client that you want to use when connecting to database of your choice. Designed to be used by knex.js. However, as long as your client is run as client(config), you can use other tools.
 - `config` (object) (required): configuration object passed as is to client (knex.js recommended), for more details check [knex documentation](http://knexjs.org/#Installation-client)
 - `internalData` (object) (optional): Pull values from middy internal storage into `config.connection` object.
-- `cacheKey` (string) (default `db`): Internal cache key for the db connection.
+- `cacheKey` (string) (default `rds`): Cache key for the fetched data responses. Must be unique across all middleware.
+- `cachePasswordKey` (string) (default `rds`):Cache key for the fetched data response related to the password. Must match the `cacheKey` for the middleware that stores it.
 - `cacheExpiry` (number) (default `-1`): How long fetch data responses should be cached for. `-1`: cache forever, `0`: never cache, `n`: cache for n ms.
 
 
@@ -78,7 +79,7 @@ Requires: @middy/core:>=2.0.0
 }
 ```
 
-If you're lambda is timing out, likely your database connections are keeping the event loop open. Check out [do-not-wait-for-empty-event-loop](https://github.com/middyjs/middy/tree/master/packages/do-not-wait-for-empty-event-loop) middleware to resolve this.
+If your lambda is timing out, likely your database connections are keeping the event loop open. Check out [do-not-wait-for-empty-event-loop](https://github.com/middyjs/middy/tree/master/packages/do-not-wait-for-empty-event-loop) middleware to resolve this.
 
 ## Sample usage
 
@@ -99,12 +100,15 @@ const handler = middy(async (event, context) => {
         database: 'postgres',
         port: 5432
       }
-    }
+    },
+    cacheKey: 'rds-signer'
   }))
   .use(rds({
     internalData: {
       password: 'rdsToken'
     },
+    cacheKey: 'rds',
+    cachePasswordKey: 'rds-signer',
     client: knex,
     config: {
       client: 'pg',
