@@ -86,6 +86,7 @@ If your lambda is timing out, likely your database connections are keeping the e
 Minimal configuration
 
 ```javascript
+const pg = capturePostgres(require('pg')) // AWS X-Ray
 const handler = middy(async (event, context) => {
     const { db } = context;
     const records = await db.select('*').from('my_table');

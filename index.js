@@ -59,8 +59,8 @@ const rdsMiddleware = (opts = {}) => {
   const options = Object.assign({}, defaults, opts)
   if (!options.client) throw new Error('client option missing')
 
-  const fetch = async (handler) => {
-    const values = await getInternal(options.internalData, handler)
+  const fetch = async (request) => {
+    const values = await getInternal(options.internalData, request)
     options.config.connection = Object.assign({}, defaultConnection, options.config.connection, values)
     const db = options.client(options.config)
     db.raw('SELECT 1') // don't await, used to force open connection
@@ -76,14 +76,14 @@ const rdsMiddleware = (opts = {}) => {
     return db
   }
 
-  const rdsMiddlewareBefore = async (handler) => {
-    const {value}  = processCache(options, fetch, handler)
+  const rdsMiddlewareBefore = async (request) => {
+    const {value}  = processCache(options, fetch, request)
 
-    Object.assign(handler.context, { db: await value }) // await due to fetch being a promise
+    Object.assign(request.context, { db: await value }) // await due to fetch being a promise
   }
-  const rdsMiddlewareAfter = async (handler) => {
+  const rdsMiddlewareAfter = async (request) => {
     if (options.cacheExpiry === 0) {
-      await promisify(handler.context.db.destroy)()
+      await promisify(request.context.db.destroy)()
     }
   }
   const rdsMiddlewareOnError = rdsMiddlewareAfter
