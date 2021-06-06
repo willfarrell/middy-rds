@@ -1,8 +1,6 @@
-const tls = require('tls')
-const { promisify } = require('util')
-const { getInternal, processCache, clearCache } = require('@middy/util')
+const { getInternal, processCache, clearCache/*, createError*/ } = require('@middy/util')
 
-const sl = require('./ssl')
+const ssl = require('./ssl')
 
 const defaults = {
   client: undefined,
@@ -13,7 +11,7 @@ const defaults = {
   cacheExpiry: -1
 }
 
-const defaultConnection = { ssl }
+const defaultConnection = { ssl, port: 5432 }
 
 const rdsMiddleware = (opts = {}) => {
   const options = Object.assign({}, defaults, opts)
@@ -21,16 +19,26 @@ const rdsMiddleware = (opts = {}) => {
 
   const fetch = async (request) => {
     const values = await getInternal(options.internalData, request)
-    options.config.connection = Object.assign({}, defaultConnection, options.config.connection, values)
-    const db = options.client(options.config)
-    db.raw('SELECT 1') // don't await, used to force open connection
-      .catch(e => {
-        // Connection failed for some reason
-        // log and clear cache, force re-connect
-        console.error('middy-rds SELECT 1', e.message)
-        clearCache([options.cachePasswordKey])
-        clearCache([options.cacheKey])
-      })
+
+    options.config = Object.assign({}, defaultConnection, options.config, values)
+
+    let pool = new options.client(options.config)
+
+    let db
+    try {
+      db = await pool.connect()
+
+    } catch(e) {
+      // Connection failed for some reason
+      // log and clear cache, force re-connect
+      clearCache([options.cachePasswordKey])
+      clearCache([options.cacheKey])
+      throw new Error(e.message) //createError(500, e.message)
+    }
+
+    // const query = async (sql, params) => {
+    //   return db.query(escape(sql, params))
+    // }
 
     // cache the connection, not the credentials as they may change over time
     return db
@@ -43,7 +51,7 @@ const rdsMiddleware = (opts = {}) => {
   }
   const rdsMiddlewareAfter = async (request) => {
     if (options.cacheExpiry === 0) {
-      await promisify(request.context.db.destroy)()
+      request.context.db.end()
     }
   }
   const rdsMiddlewareOnError = rdsMiddlewareAfter

@@ -85,7 +85,10 @@ If your lambda is timing out, likely your database connections are keeping the e
 
 Minimal configuration
 
+### knex
 ```javascript
+const rds = require('middy-rds')
+const knex = require('knex')
 const pg = capturePostgres(require('pg')) // AWS X-Ray
 const handler = middy(async (event, context) => {
     const { db } = context;
@@ -119,6 +122,42 @@ const handler = middy(async (event, context) => {
         database: 'postgres',
         port: 5432
       }
+    }
+  }))
+```
+
+### pg
+```javascript
+const rds = require('middy-rds/pg')
+const pg = capturePostgres(require('pg')) // AWS X-Ray
+const handler = middy(async (event, context) => {
+    const { db } = context;
+    const records = await db.select('*').from('my_table');
+    console.log(records);
+  })
+  .use(rdsSigner({
+    fetchData: {
+      rdsToken: {
+        region: 'ca-central-1',
+        hostname: '*.ca-central-1.rds.amazonaws.com',
+        username: 'iam_role',
+        database: 'postgres',
+        port: 5432
+      }
+    },
+    cacheKey: 'rds-signer'
+  }))
+  .use(rds({
+    internalData: {
+      password: 'rdsToken'
+    },
+    cacheKey: 'rds',
+    cachePasswordKey: 'rds-signer',
+    client: pg.Pool,
+    config: {
+      host: '*.ca-central-1.rds.amazonaws.com',
+      user: 'iam_role',
+      database: 'postgres'
     }
   }))
 ```
