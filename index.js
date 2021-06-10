@@ -2,7 +2,7 @@ const tls = require('tls')
 const { promisify } = require('util')
 const { getInternal, processCache, clearCache } = require('@middy/util')
 
-const sl = require('./ssl')
+const ssl = require('./ssl')
 
 const defaults = {
   client: undefined,
