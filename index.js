@@ -43,7 +43,7 @@ const rdsMiddleware = (opts = {}) => {
   }
   const rdsMiddlewareAfter = async (request) => {
     if (options.cacheExpiry === 0) {
-      await promisify(request.context.db.destroy)()
+      await request.context.db.destroy()
     }
   }
   const rdsMiddlewareOnError = rdsMiddlewareAfter
