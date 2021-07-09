@@ -1,5 +1,3 @@
-const tls = require('tls')
-const { promisify } = require('util')
 const { getInternal, processCache, clearCache } = require('@middy/util')
 
 const ssl = require('./ssl')
@@ -21,7 +19,7 @@ const rdsMiddleware = (opts = {}) => {
 
   const fetch = async (request) => {
     const values = await getInternal(options.internalData, request)
-    options.config.connection = Object.assign({}, defaultConnection, options.config.connection, values)
+    options.config.connection = {...defaultConnection, ...options.config.connection, ...values}
     const db = options.client(options.config)
     db.raw('SELECT 1') // don't await, used to force open connection
       .catch(e => {
@@ -30,6 +28,8 @@ const rdsMiddleware = (opts = {}) => {
         console.error('middy-rds SELECT 1', e.message)
         clearCache([options.cachePasswordKey])
         clearCache([options.cacheKey])
+        //prefetch = undefined
+        options.config.password = undefined
       })
 
     // cache the connection, not the credentials as they may change over time
