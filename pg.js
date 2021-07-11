@@ -30,7 +30,7 @@ const rdsMiddleware = (opts = {}) => {
 
     const pool = new options.client(options.config)
 
-    // cache the connection, not the credentials as they may change over time
+    // cache the connection, not the credentials as they change over time
     return pool
       .connect()
       .catch(e => {
@@ -39,8 +39,10 @@ const rdsMiddleware = (opts = {}) => {
         clearCache([options.cachePasswordKey])
         clearCache([options.cacheKey])
         prefetch = undefined
-        options.config.password = undefined
         throw new Error(e.message) //createError(500, e.message)
+      })
+      .finally(() => {
+        options.config.password = undefined
       })
   }
 
