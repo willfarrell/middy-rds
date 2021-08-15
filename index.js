@@ -6,6 +6,7 @@ const defaults = {
   client: undefined,
   config: {},
   internalData: {},
+  contextKey: 'db',
   cacheKey: 'rds',
   cachePasswordKey: 'rds',
   cacheExpiry: -1
@@ -39,11 +40,11 @@ const rdsMiddleware = (opts = {}) => {
   const rdsMiddlewareBefore = async (request) => {
     const {value}  = processCache(options, fetch, request)
 
-    Object.assign(request.context, { db: await value }) // await due to fetch being a promise
+    Object.assign(request.context, { [options.contextKey]: await value }) // await due to fetch being a promise
   }
   const rdsMiddlewareAfter = async (request) => {
     if (options.cacheExpiry === 0) {
-      await request.context.db.destroy()
+      await request.context[options.contextKey].destroy()
     }
   }
   const rdsMiddlewareOnError = rdsMiddlewareAfter

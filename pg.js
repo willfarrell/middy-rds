@@ -8,13 +8,14 @@ const defaults = {
   client: undefined,
   config: {},
   internalData: undefined,
+  contextKey: 'db',
   disablePrefetch: false,
   cacheKey: 'rds',
   cachePasswordKey: 'rds',
   cacheExpiry: -1
 }
 
-const defaultConnection = { ssl, port: 5432 }
+const defaultConnection = { ssl }
 
 const rdsMiddleware = (opts = {}) => {
   const options = { ...defaults, ...opts }
@@ -26,6 +27,9 @@ const rdsMiddleware = (opts = {}) => {
     options.config = { ...defaultConnection, ...options.config, ...values }
     if (!options.config.password) {
       options.config.password = await iamToken(options.config)
+    }
+    if (!options.config.port) {
+      options.config.port = process.env.PGPORT ?? 5432
     }
 
     const pool = new options.client(options.config)
@@ -52,12 +56,13 @@ const rdsMiddleware = (opts = {}) => {
   }
 
   const rdsMiddlewareBefore = async (request) => {
+    console.log(prefetch, options)
     const { value } = prefetch ?? processCache(options, fetch, request)
-    Object.assign(request.context, { db: await value }) // await due to fetch being a promise
+    Object.assign(request.context, { [options.contextKey]: await value }) // await due to fetch being a promise
   }
   const rdsMiddlewareAfter = async (request) => {
     if (options.cacheExpiry === 0) {
-      await request.context.db.end()
+      await request.context[options.contextKey].end()
     }
   }
   const rdsMiddlewareOnError = rdsMiddlewareAfter
@@ -73,7 +78,7 @@ const iamToken = async (config) => {
   const client = new RDS.Signer({
     region: process.env.AWS_REGION,
     hostname: config.host ?? process.env.PGHOST,
-    port: config.port ?? process.env.PGPORT ?? defaultConnection.port,
+    port: config.port ?? process.env.PGPORT ?? 5432,
     username: config.user ?? process.env.PGUSER,
   })
 

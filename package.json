@@ -1,6 +1,6 @@
 {
   "name": "middy-rds",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "description": "Simple RDS manager for the middy framework",
   "type": "commonjs",
   "engines": {
@@ -39,5 +39,8 @@
   "dependencies": {
     "@middy/util": "^2.4.1"
   },
-  "gitHead": "7a6c0fbb8ab71d6a2171e678697de9f237568431"
+  "gitHead": "7a6c0fbb8ab71d6a2171e678697de9f237568431",
+  "devDependencies": {
+    "aws-sdk": "^2.944.0"
+  }
 }
