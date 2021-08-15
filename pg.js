@@ -56,7 +56,6 @@ const rdsMiddleware = (opts = {}) => {
   }
 
   const rdsMiddlewareBefore = async (request) => {
-    console.log(prefetch, options)
     const { value } = prefetch ?? processCache(options, fetch, request)
     Object.assign(request.context, { [options.contextKey]: await value }) // await due to fetch being a promise
   }
