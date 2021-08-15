@@ -29,7 +29,7 @@ const rdsMiddleware = (opts = {}) => {
       options.config.password = await iamToken(options.config)
     }
     if (!options.config.port) {
-      options.config.port = process.env.PGPORT ?? 5432
+      options.config.port = Number.parseInt(process.env.PGPORT ?? 5432)
     }
 
     const pool = new options.client(options.config)
@@ -78,7 +78,7 @@ const iamToken = async (config) => {
   const client = new RDS.Signer({
     region: process.env.AWS_REGION,
     hostname: config.host ?? process.env.PGHOST,
-    port: config.port ?? process.env.PGPORT ?? 5432,
+    port: Number.parseInt(config.port ?? process.env.PGPORT ?? 5432),
     username: config.user ?? process.env.PGUSER,
   })
 
