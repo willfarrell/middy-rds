@@ -1,6 +1,6 @@
 {
   "name": "middy-rds",
-  "version": "2.2.7",
+  "version": "2.2.8",
   "description": "Simple RDS manager for the middy framework",
   "type": "commonjs",
   "engines": {
