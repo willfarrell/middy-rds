@@ -1,8 +1,7 @@
-const { canPrefetch, getInternal, processCache, clearCache/*, createError*/ } = require('@middy/util')
-const RDS = require('aws-sdk/clients/rds') // v2
-// const { RDS } = require('@aws-sdk/client-rds') // v3
+import { canPrefetch, getInternal, processCache, clearCache } from '@middy/util'
 
-const ssl = require('./ssl')
+import iamToken from '../lib/iam-token.js'
+import ssl from '../lib/ssl.js'
 
 const defaults = {
   client: undefined,
@@ -23,31 +22,26 @@ const rdsMiddleware = (opts = {}) => {
 
   const fetch = async (request) => {
     const values = await getInternal(options.internalData, request)
-
     options.config = { ...defaultConnection, ...options.config, ...values }
     if (!options.config.password) {
       options.config.password = await iamToken(options.config)
     }
-    if (!options.config.port) {
-      options.config.port = Number.parseInt(process.env.PGPORT ?? 5432)
-    }
 
-    const pool = new options.client(options.config)
-
-    // cache the connection, not the credentials as they change over time
-    return pool
-      .connect()
-      .catch(e => {
+    const db = options.client(options.config)
+    db`SELECT 1` // don't await, used to force open connection
+      .catch((e) => {
         // Connection failed for some reason
         // log and clear cache, force re-connect
         clearCache([options.cachePasswordKey])
         clearCache([options.cacheKey])
         prefetch = undefined
-        throw new Error(e.message) //createError(500, e.message)
+        throw new Error(e.message) // createError(500, e.message)
       })
       .finally(() => {
         options.config.password = undefined
       })
+
+    return db
   }
 
   let prefetch
@@ -73,27 +67,4 @@ const rdsMiddleware = (opts = {}) => {
   }
 }
 
-const iamToken = async (config) => {
-  const client = new RDS.Signer({
-    region: process.env.AWS_REGION,
-    hostname: config.host ?? process.env.PGHOST,
-    port: Number.parseInt(config.port ?? process.env.PGPORT ?? 5432),
-    username: config.user ?? process.env.PGUSER,
-  })
-
-  // AWS doesn't support getAuthToken.promise() in aws-sdk v2 :( See https://github.com/aws/aws-sdk-js/issues/3595
-  return new Promise((resolve, reject) => {
-    client.getAuthToken({}, (err, token) => {
-      if (err) {
-        reject(err)
-      }
-      // Catch Missing token, this usually means their is something wrong with the credentials
-      if (!token.includes('X-Amz-Security-Token=')) {
-        reject(new Error('X-Amz-Security-Token Missing'))
-      }
-      resolve(token)
-    })
-  })
-}
-
-module.exports = rdsMiddleware
+export default rdsMiddleware

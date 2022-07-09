@@ -1,4 +1,4 @@
-# Middy RDS manager
+# Middy RDS Middleware
 
 <div align="center">
   <img alt="Middy logo" src="https://raw.githubusercontent.com/middyjs/middy/master/docs/img/middy-logo.png"/>
@@ -50,7 +50,7 @@ To install this middleware you can use NPM:
 npm install --save middy-rds
 ```
 
-Requires: @middy/core:>=2.0.0
+Requires: @middy/core:>=3.0.0
 
 ## Options
 - `client` (function) (required): client that you want to use when connecting to database of your choice. Designed to be used by knex.js. However, as long as your client is run as client(config), you can use other tools.
@@ -85,34 +85,47 @@ If your lambda is timing out, likely your database connections are keeping the e
 
 Minimal configuration
 
-### knex
+### pg
 ```javascript
-const rds = require('middy-rds')
-const knex = require('knex')
-const pg = capturePostgres(require('pg')) // AWS X-Ray
+import rdsMiddleware from 'middy-rds/pg'
+
+import capturePostgres from 'aws-xray-sdk-postgres'
+import pgClient from 'pg'
+
+const pg = capturePostgres(pgClient)
+
 const handler = middy(async (event, context) => {
     const { db } = context;
     const records = await db.select('*').from('my_table');
     console.log(records);
   })
-  .use(rdsSigner({
-    fetchData: {
-      rdsToken: {
-        region: 'ca-central-1',
-        hostname: '*.ca-central-1.rds.amazonaws.com',
-        username: 'iam_role',
-        database: 'postgres',
-        port: 5432
-      }
-    },
-    cacheKey: 'rds-signer'
+  .use(rdsMiddleware({
+    client: pg.Pool,
+    config: {
+      host: '*.ca-central-1.rds.amazonaws.com',
+      user: 'iam_role',
+      database: 'postgres',
+      application_name: process.env.AWS_LAMBDA_FUNCTION_NAME,
+    }
   }))
-  .use(rds({
-    internalData: {
-      password: 'rdsToken'
-    },
-    cacheKey: 'rds',
-    cachePasswordKey: 'rds-signer',
+```
+
+### knex
+```javascript
+import rdsMiddleware from 'middy-rds/knex'
+import knex from 'knex'
+
+import capturePostgres from 'aws-xray-sdk-postgres'
+import pgClient from 'pg'
+
+const pg = capturePostgres(pgClient)
+
+const handler = middy(async (event, context) => {
+    const { db } = context;
+    const records = await db.select('*').from('my_table');
+    console.log(records);
+  })
+  .use(rdsMiddleware({
     client: knex,
     config: {
       client: 'pg',
@@ -120,44 +133,34 @@ const handler = middy(async (event, context) => {
         host: '*.ca-central-1.rds.amazonaws.com',
         user: 'iam_role',
         database: 'postgres',
-        port: 5432
+        port: 5432,
+        application_name: process.env.AWS_LAMBDA_FUNCTION_NAME,
       }
     }
   }))
 ```
 
-### pg
+### postgres
 ```javascript
-const rds = require('middy-rds/pg')
-const pg = capturePostgres(require('pg')) // AWS X-Ray
+import rdsMiddleware from 'middy-rds/postgres'
+
+import postgresClient from 'postgres'
+
+
 const handler = middy(async (event, context) => {
     const { db } = context;
     const records = await db.select('*').from('my_table');
     console.log(records);
   })
-  .use(rdsSigner({
-    fetchData: {
-      rdsToken: {
-        region: 'ca-central-1',
-        hostname: '*.ca-central-1.rds.amazonaws.com',
-        username: 'iam_role',
-        database: 'postgres',
-        port: 5432
-      }
-    },
-    cacheKey: 'rds-signer'
-  }))
-  .use(rds({
-    internalData: {
-      password: 'rdsToken'
-    },
-    cacheKey: 'rds',
-    cachePasswordKey: 'rds-signer',
-    client: pg.Pool,
+  .use(rdsMiddleware({
+    client: postgresClient,
     config: {
       host: '*.ca-central-1.rds.amazonaws.com',
       user: 'iam_role',
-      database: 'postgres'
+      database: 'postgres',
+      connection: {
+        application_name: process.env.AWS_LAMBDA_FUNCTION_NAME,
+      },
     }
   }))
 ```
