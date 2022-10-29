@@ -1,6 +1,6 @@
 {
   "name": "middy-rds",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Simple RDS manager for the middy framework",
   "type": "module",
   "engines": {
@@ -10,26 +10,38 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "./index.js",
+  "main": "./index.mjs",
   "exports": {
     ".": {
       "import": {
-        "default": "./index.js"
+        "default": "./index.mjs"
+      },
+      "require": {
+        "default": "./index.cjs"
       }
     },
     "./knex": {
       "import": {
-        "default": "./clients/knex.js"
+        "default": "./clients/knex.mjs"
+      },
+      "require": {
+        "default": "./clients/knex.cjs"
       }
     },
     "./pg": {
       "import": {
-        "default": "./clients/pg.js"
+        "default": "./clients/pg.mjs"
+      },
+      "require": {
+        "default": "./clients/pg.cjs"
       }
     },
     "./postgres": {
       "import": {
-        "default": "./clients/postgres.js"
+        "default": "./clients/postgres.mjs"
+      },
+      "require": {
+        "default": "./clients/postgres.cjs"
       }
     }
   },
