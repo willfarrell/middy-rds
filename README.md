@@ -28,19 +28,20 @@
 RDS provides seamless connection with database of your choice.
 
 After initialization your database connection is accessible under:
+
 ```javascript
 middy((event, context) => {
-  const { db } = context;
-});
+  const { sql } = context
+})
 ```
 
 Mind that if you use knex you will also need driver of your choice ([check docs](http://knexjs.org/#Installation-node)), for PostgreSQL that would be:
-```
-yarn add pg
-// or
-npm install pg
-```
 
+```
+yarn add {pg,postgres}
+// or
+npm install {pg,postgres}
+```
 
 ## Install
 
@@ -48,11 +49,13 @@ To install this middleware you can use NPM:
 
 ```bash
 npm install --save middy-rds
+npm install --save-dev @aws-sdk/rds-signer
 ```
 
-Requires: @middy/core:>=3.0.0
+Requires: @middy/core:>=4.0.0
 
 ## Options
+
 - `client` (function) (required): client that you want to use when connecting to database of your choice. Designed to be used by knex.js. However, as long as your client is run as client(config), you can use other tools.
 - `config` (object) (required): configuration object passed as is to client (knex.js recommended), for more details check [knex documentation](http://knexjs.org/#Installation-client)
 - `internalData` (object) (optional): Pull values from middy internal storage into `config.connection` object.
@@ -60,15 +63,15 @@ Requires: @middy/core:>=3.0.0
 - `cachePasswordKey` (string) (default `rds`):Cache key for the fetched data response related to the password. Must match the `cacheKey` for the middleware that stores it.
 - `cacheExpiry` (number) (default `-1`): How long fetch data responses should be cached for. `-1`: cache forever, `0`: never cache, `n`: cache for n ms.
 
-
 **Note:**
+
 - `config.connection` defaults to:
 
 ```javascript
 {
   ssl: {
     rejectUnauthorized: true,
-    ca, // rds-ca-2019-root.pem
+    ca, // readFile(process.env.NODE_EXTRA_CA_CERTS)
     checkServerIdentity: (host, cert) => {
       const error = tls.checkServerIdentity(host, cert)
       if (error && !cert.subject.CN.endsWith('.rds.amazonaws.com')) {
@@ -86,6 +89,7 @@ If your lambda is timing out, likely your database connections are keeping the e
 Minimal configuration
 
 ### pg
+
 ```javascript
 import rdsMiddleware from 'middy-rds/pg'
 
@@ -95,22 +99,24 @@ import pgClient from 'pg'
 const pg = capturePostgres(pgClient)
 
 const handler = middy(async (event, context) => {
-    const { db } = context;
-    const records = await db.select('*').from('my_table');
-    console.log(records);
-  })
-  .use(rdsMiddleware({
+  const { sql } = context
+  const records = await sql.select('*').from('my_table')
+  console.log(records)
+}).use(
+  rdsMiddleware({
     client: pg.Pool,
     config: {
       host: '*.ca-central-1.rds.amazonaws.com',
       user: 'iam_role',
       database: 'postgres',
-      application_name: process.env.AWS_LAMBDA_FUNCTION_NAME,
+      application_name: process.env.AWS_LAMBDA_FUNCTION_NAME
     }
-  }))
+  })
+)
 ```
 
 ### knex
+
 ```javascript
 import rdsMiddleware from 'middy-rds/knex'
 import knex from 'knex'
@@ -121,11 +127,11 @@ import pgClient from 'pg'
 const pg = capturePostgres(pgClient)
 
 const handler = middy(async (event, context) => {
-    const { db } = context;
-    const records = await db.select('*').from('my_table');
-    console.log(records);
-  })
-  .use(rdsMiddleware({
+  const { sql } = context
+  const records = await sql.select('*').from('my_table')
+  console.log(records)
+}).use(
+  rdsMiddleware({
     client: knex,
     config: {
       client: 'pg',
@@ -134,51 +140,50 @@ const handler = middy(async (event, context) => {
         user: 'iam_role',
         database: 'postgres',
         port: 5432,
-        application_name: process.env.AWS_LAMBDA_FUNCTION_NAME,
+        application_name: process.env.AWS_LAMBDA_FUNCTION_NAME
       }
     }
-  }))
+  })
+)
 ```
 
 ### postgres
+
 ```javascript
 import rdsMiddleware from 'middy-rds/postgres'
 
 import postgresClient from 'postgres'
 
-
 const handler = middy(async (event, context) => {
-    const { db } = context;
-    const records = await db.select('*').from('my_table');
-    console.log(records);
-  })
-  .use(rdsMiddleware({
+  const { sql } = context
+  const records = await sql`SELECT * FROM my_table`
+  console.log(records)
+}).use(
+  rdsMiddleware({
     client: postgresClient,
     config: {
       host: '*.ca-central-1.rds.amazonaws.com',
       user: 'iam_role',
       database: 'postgres',
       connection: {
-        application_name: process.env.AWS_LAMBDA_FUNCTION_NAME,
-      },
+        application_name: process.env.AWS_LAMBDA_FUNCTION_NAME
+      }
     }
-  }))
+  })
+)
 ```
-
 
 ## Middy documentation and examples
 
 For more documentation and examples, refers to the main [Middy monorepo on GitHub](https://github.com/middyjs/middy) or [Middy official website](https://middy.js.org).
 
-
 ## Contributing
 
 Everyone is very welcome to contribute to this repository. Feel free to [raise issues](https://github.com/middyjs/middy/issues) or to [submit Pull Requests](https://github.com/middyjs/middy/pulls).
 
-
 ## License
 
-Licensed under [MIT License](LICENSE). Copyright (c) 2017-2021 will Farrell and the [Middy team](https://github.com/middyjs/middy/graphs/contributors).
+Licensed under [MIT License](LICENSE). Copyright (c) 2017-2022 will Farrell and the [Middy team](https://github.com/middyjs/middy/graphs/contributors).
 
 <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fmiddyjs%2Fmiddy?ref=badge_large">
   <img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmiddyjs%2Fmiddy.svg?type=large" alt="FOSSA Status"  style="max-width:100%;">

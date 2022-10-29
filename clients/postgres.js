@@ -7,7 +7,7 @@ const defaults = {
   client: undefined,
   config: {},
   internalData: undefined,
-  contextKey: 'db',
+  contextKey: 'sql',
   disablePrefetch: false,
   cacheKey: 'rds',
   cachePasswordKey: 'rds',
@@ -27,8 +27,8 @@ const rdsMiddleware = (opts = {}) => {
       options.config.password = await iamToken(options.config)
     }
 
-    const db = options.client(options.config)
-    db`SELECT 1` // don't await, used to force open connection
+    const sql = options.client(options.config)
+    sql`SELECT 1` // don't await, used to force open connection
       .catch((e) => {
         // Connection failed for some reason
         // log and clear cache, force re-connect
@@ -41,7 +41,7 @@ const rdsMiddleware = (opts = {}) => {
         options.config.password = undefined
       })
 
-    return db
+    return sql
   }
 
   let prefetch

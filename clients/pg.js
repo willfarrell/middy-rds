@@ -7,7 +7,7 @@ const defaults = {
   client: undefined,
   config: {},
   internalData: undefined,
-  contextKey: 'db',
+  contextKey: 'sql',
   disablePrefetch: false,
   cacheKey: 'rds',
   cachePasswordKey: 'rds',

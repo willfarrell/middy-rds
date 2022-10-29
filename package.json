@@ -1,10 +1,10 @@
 {
   "name": "middy-rds",
-  "version": "3.0.1",
+  "version": "4.0.0-alpha.3",
   "description": "Simple RDS manager for the middy framework",
   "type": "module",
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "engineStrict": true,
   "publishConfig": {
@@ -81,19 +81,19 @@
   },
   "homepage": "https://github.com/willfarrell/middy-rds#readme",
   "dependencies": {
-    "@middy/util": "3.1.0"
+    "@middy/util": "4.0.0-alpha.4"
   },
   "gitHead": "7a6c0fbb8ab71d6a2171e678697de9f237568431",
   "devDependencies": {
+    "@aws-sdk/rds-signer": "^3.199.0",
     "@commitlint/cli": "^17.0.0",
     "@commitlint/config-conventional": "^17.0.0",
-    "ava": "^4.0.0",
-    "aws-sdk": "^2.944.0",
+    "ava": "^5.0.0",
     "c8": "^7.0.0",
-    "esbuild": "0.14.48",
+    "esbuild": "^0.15.12",
     "husky": "^8.0.0",
     "lint-staged": "^13.0.0",
     "prettier": "^2.0.0",
-    "standard": "17.0.0"
+    "standard": "^17.0.0"
   }
 }
