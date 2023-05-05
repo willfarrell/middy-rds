@@ -1,4 +1,4 @@
-import { canPrefetch, getInternal, processCache, clearCache } from '@middy/util'
+import { canPrefetch, getInternal, processCache } from '@middy/util'
 
 import iamToken from '../lib/iam-token.js'
 import ssl from '../lib/ssl.js'
@@ -7,11 +7,10 @@ const defaults = {
   client: undefined,
   config: {},
   internalData: undefined,
-  contextKey: 'sql',
+  contextKey: 'rds',
   disablePrefetch: false,
   cacheKey: 'rds',
-  cachePasswordKey: 'rds',
-  cacheExpiry: -1
+  cacheExpiry: 15 * 60 * 1000 - 1 // IAM token lasts for 15min
 }
 
 const defaultConnection = { ssl }
@@ -28,19 +27,7 @@ const rdsMiddleware = (opts = {}) => {
     }
 
     const sql = options.client(options.config)
-    sql`SELECT 1` // don't await, used to force open connection
-      .catch((e) => {
-        // Connection failed for some reason
-        // log and clear cache, force re-connect
-        clearCache([options.cachePasswordKey])
-        clearCache([options.cacheKey])
-        prefetch = undefined
-        throw new Error(e.message) // createError(500, e.message)
-      })
-      .finally(() => {
-        options.config.password = undefined
-      })
-
+    options.config.password = undefined
     return sql
   }
 
