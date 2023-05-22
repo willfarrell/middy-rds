@@ -37,15 +37,14 @@ const rdsMiddleware = (opts = {}) => {
     return pool
   }
 
-  let prefetch
   if (canPrefetch(options)) {
-    prefetch = processCache(options, fetch)
+    processCache(options, fetch)
   }
 
   const rdsMiddlewareBefore = async (request) => {
-    const { value } = prefetch ?? processCache(options, fetch, request)
+    const { value } = processCache(options, fetch, request)
     Object.assign(request.context, {
-      [options.contextKey]: await value // for parallel connections, use `client = await pool.connect(); client.release()` for transactions
+      [options.contextKey]: await value // for transactions, use `client = await pool.connect(); client.release()`
     })
   }
   const rdsMiddlewareAfter = async (request) => {
