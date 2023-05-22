@@ -1,11 +1,11 @@
 #!/usr/bin/env sh
 
 node_modules/.bin/esbuild --platform=node --target=node14 --format=cjs index.js                                        --allow-overwrite --outfile=index.cjs
-node_modules/.bin/esbuild --platform=node --target=node14 --format=cjs clients/knex.js     --external:aws-sdk --bundle --allow-overwrite --outfile=clients/knex.cjs
-node_modules/.bin/esbuild --platform=node --target=node14 --format=cjs clients/pg.js       --external:aws-sdk --bundle --allow-overwrite --outfile=clients/pg.cjs
-node_modules/.bin/esbuild --platform=node --target=node14 --format=cjs clients/postgres.js --external:aws-sdk --bundle --allow-overwrite --outfile=clients/postgres.cjs
+node_modules/.bin/esbuild --platform=node --target=node14 --format=cjs clients/knex.js     --external:@aws-sdk --external:@middy --bundle --allow-overwrite --outfile=clients/knex.cjs
+node_modules/.bin/esbuild --platform=node --target=node14 --format=cjs clients/pg.js       --external:@aws-sdk --external:@middy --bundle --allow-overwrite --outfile=clients/pg.cjs
+node_modules/.bin/esbuild --platform=node --target=node14 --format=cjs clients/postgres.js --external:@aws-sdk --external:@middy --bundle --allow-overwrite --outfile=clients/postgres.cjs
 
 node_modules/.bin/esbuild --platform=node --target=node14 --format=esm index.js                                        --allow-overwrite --outfile=index.mjs
-node_modules/.bin/esbuild --platform=node --target=node14 --format=esm clients/knex.js     --external:aws-sdk --bundle --allow-overwrite --outfile=clients/knex.mjs
-node_modules/.bin/esbuild --platform=node --target=node14 --format=esm clients/pg.js       --external:aws-sdk --bundle --allow-overwrite --outfile=clients/pg.mjs
-node_modules/.bin/esbuild --platform=node --target=node14 --format=esm clients/postgres.js --external:aws-sdk --bundle --allow-overwrite --outfile=clients/postgres.mjs
+node_modules/.bin/esbuild --platform=node --target=node14 --format=esm clients/knex.js     --external:@aws-sdk --external:@middy --bundle --allow-overwrite --outfile=clients/knex.mjs
+node_modules/.bin/esbuild --platform=node --target=node14 --format=esm clients/pg.js       --external:@aws-sdk --external:@middy --bundle --allow-overwrite --outfile=clients/pg.mjs
+node_modules/.bin/esbuild --platform=node --target=node14 --format=esm clients/postgres.js --external:@aws-sdk --external:@middy --bundle --allow-overwrite --outfile=clients/postgres.mjs
