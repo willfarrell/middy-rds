@@ -6,6 +6,7 @@ import ssl from '../lib/ssl.js'
 const defaults = {
   client: undefined,
   config: {},
+  forceConnection: false,
   internalData: undefined,
   contextKey: 'rds',
   disablePrefetch: false,
@@ -28,6 +29,9 @@ const rdsMiddleware = (opts = {}) => {
 
     const sql = options.client(options.config)
     options.config.password = undefined
+    if (options.forceConnection) {
+      await sql`SELECT 1`
+    }
     return sql
   }
 

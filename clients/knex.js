@@ -6,6 +6,7 @@ import ssl from '../lib/ssl.js'
 const defaults = {
   client: undefined,
   config: {},
+  forceConnection: false,
   internalData: undefined,
   contextKey: 'rds',
   disablePrefetch: false,
@@ -33,10 +34,13 @@ const rdsMiddleware = (opts = {}) => {
       options.config.connection.password = await iamToken(options.config)
     }
 
-    const db = options.client(options.config)
+    const knex = options.client(options.config)
     options.config.password = undefined
     // cache the connection, not the credentials as they may change over time
-    return db
+    if (options.forceConnection) {
+      await knex.raw('SELECT 1')
+    }
+    return knex
   }
 
   let prefetch
