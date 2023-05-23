@@ -8,6 +8,7 @@ const defaults = {
   config: {
     application_name: process.env.AWS_LAMBDA_FUNCTION_NAME
   },
+  forceConnection: false,
   internalData: undefined,
   contextKey: 'rds',
   disablePrefetch: false,
@@ -34,6 +35,9 @@ const rdsMiddleware = (opts = {}) => {
     const Client = options.client
     const pool = new Client(options.config)
     options.config.password = undefined
+    if (options.forceConnection) {
+      await pool.query('SELECT 1')
+    }
     return pool
   }
 

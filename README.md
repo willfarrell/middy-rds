@@ -58,6 +58,7 @@ Requires: @middy/core:>=4.0.0
 
 - `client` (function) (required): client that you want to use when connecting to database of your choice. Designed to be used by knex.js. However, as long as your client is run as client(config), you can use other tools.
 - `config` (object) (required): configuration object passed as is to client (knex.js recommended), for more details check [knex documentation](http://knexjs.org/#Installation-client)
+- `forceConnection` (boolean) (default `false`): After creating the database client call `SELECT 1` to for a connection to be opened
 - `internalData` (object) (optional): Pull values from middy internal storage into `config.connection` object.
 - `cacheKey` (string) (default `rds`): Cache key for the fetched data responses. Must be unique across all middleware.
 - `cachePasswordKey` (string) (default `rds`):Cache key for the fetched data response related to the password. Must match the `cacheKey` for the middleware that stores it.
