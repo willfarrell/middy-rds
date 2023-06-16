@@ -25,12 +25,9 @@ const rdsMiddleware = (opts = {}) => {
   const fetch = async (request) => {
     const values = await getInternal(options.internalData, request)
     options.config = { ...defaultConnection, ...options.config, ...values }
-    if (!options.config.port) {
-      options.config.port = Number.parseInt(process.env.PGPORT ?? 5432)
-    }
-    if (!options.config.password) {
-      options.config.password = await iamToken(options.config)
-    }
+
+    options.config.port ??= Number.parseInt(process.env.PGPORT ?? 5432)
+    options.config.password ??= await iamToken(options.config)
 
     const Client = options.client
     const pool = new Client(options.config)

@@ -1,6 +1,6 @@
 {
   "name": "middy-rds",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.3",
   "description": "Simple RDS manager for the middy framework",
   "type": "module",
   "engines": {
