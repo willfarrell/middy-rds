@@ -30,9 +30,7 @@ const rdsMiddleware = (opts = {}) => {
     if (!options.config.connection.port) {
       throw new Error('port missing')
     }
-    if (!options.config.connection.password) {
-      options.config.connection.password = await iamToken(options.config)
-    }
+    options.config.connection.password ??= await iamToken(options.config)
 
     const knex = options.client(options.config)
     options.config.password = undefined
