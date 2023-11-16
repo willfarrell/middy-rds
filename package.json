@@ -1,6 +1,6 @@
 {
   "name": "middy-rds",
-  "version": "5.0.0-alpha.5",
+  "version": "5.0.0-rc.0",
   "description": "Simple RDS manager for the middy framework",
   "type": "module",
   "engines": {
@@ -48,8 +48,7 @@
   "files": [
     "index.mjs",
     "index.cjs",
-    "clients/*",
-    "lib/global-bundle.pem"
+    "clients/*"
   ],
   "scripts": {
     "prepare": "husky install",

@@ -174,6 +174,14 @@ const handler = middy(async (event, context) => {
 )
 ```
 
+## Using with docker
+
+```Dockerfile
+# https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html
+ADD https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem /path/to/save/
+ENV NODE_EXTRA_CA_CERTS=/path/to/save/global-bundle.pem
+```
+
 ## Middy documentation and examples
 
 For more documentation and examples, refers to the main [Middy monorepo on GitHub](https://github.com/middyjs/middy) or [Middy official website](https://middy.js.org).
