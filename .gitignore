@@ -1,6 +1,8 @@
 *.cjs
 *.mjs
 
+certificates/*
+
 # Logs
 logs
 *.log
