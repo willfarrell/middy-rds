@@ -25,7 +25,11 @@ const rdsMiddleware = (opts = {}) => {
     options.config.connection = {
       ...defaultConnection,
       ...options.config.connection,
-      ...values
+      ...values,
+      ssl: {
+        ...defaultConnection.ssl,
+        ...options.config.connection.ssl
+      }
     }
     if (!options.config.connection.port) {
       throw new Error('port missing')

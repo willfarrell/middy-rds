@@ -22,7 +22,12 @@ const rdsMiddleware = (opts = {}) => {
 
   const fetch = async (request) => {
     const values = await getInternal(options.internalData, request)
-    options.config = { ...defaultConnection, ...options.config, ...values }
+    options.config = {
+      ...defaultConnection,
+      ...options.config,
+      ...values,
+      ssl: { ...defaultConnection.ssl, ...options.config.ssl }
+    }
 
     options.config.port ??= Number.parseInt(process.env.PGPORT ?? 5432)
     options.config.password ??= await iamToken(options.config)

@@ -72,7 +72,6 @@ Requires: @middy/core:>=4.0.0
 {
   ssl: {
     rejectUnauthorized: true,
-    ca, // readFile(process.env.NODE_EXTRA_CA_CERTS)
     checkServerIdentity: (host, cert) => {
       const error = tls.checkServerIdentity(host, cert)
       if (error && !cert.subject.CN.endsWith('.rds.amazonaws.com')) {
@@ -93,6 +92,7 @@ Minimal configuration
 
 ```javascript
 import rdsMiddleware from 'middy-rds/pg'
+import ca from 'middy-rds/ca'
 
 import capturePostgres from 'aws-xray-sdk-postgres'
 import pgClient from 'pg'
@@ -110,7 +110,9 @@ const handler = middy(async (event, context) => {
       host: '*.ca-central-1.rds.amazonaws.com',
       user: 'iam_role',
       database: 'postgres',
-      application_name: process.env.AWS_LAMBDA_FUNCTION_NAME
+      application_name: process.env.AWS_LAMBDA_FUNCTION_NAME,
+      // loads the cert from process.env.NODE_EXTRA_CA_CERTS, can be set to /var/task/node_modules/middy-rds/certificates/us-east-1.pem
+      ssl: { ca: ca() }
     }
   })
 )
@@ -120,6 +122,7 @@ const handler = middy(async (event, context) => {
 
 ```javascript
 import rdsMiddleware from 'middy-rds/knex'
+import ca from 'middy-rds/certificates/ca-central-1'
 import knex from 'knex'
 
 import capturePostgres from 'aws-xray-sdk-postgres'
@@ -141,7 +144,9 @@ const handler = middy(async (event, context) => {
         user: 'iam_role',
         database: 'postgres',
         port: 5432,
-        application_name: process.env.AWS_LAMBDA_FUNCTION_NAME
+        application_name: process.env.AWS_LAMBDA_FUNCTION_NAME,
+        // /var/task/node_modules/middy-rds/certificates/ca-central-1.pem ported to a js file for easy import
+        ssl: { ca }
       }
     }
   })
@@ -152,6 +157,7 @@ const handler = middy(async (event, context) => {
 
 ```javascript
 import rdsMiddleware from 'middy-rds/postgres'
+import ca from 'middy-rds/certificates/ca-central-1'
 
 import postgresClient from 'postgres'
 
@@ -168,6 +174,9 @@ const handler = middy(async (event, context) => {
       database: 'postgres',
       connection: {
         application_name: process.env.AWS_LAMBDA_FUNCTION_NAME
+      },
+      ssl: {
+        ca
       }
     }
   })
