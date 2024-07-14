@@ -1,6 +1,6 @@
 {
   "name": "middy-rds",
-  "version": "5.0.0-rc.3",
+  "version": "5.0.0-rc.4",
   "description": "Simple RDS manager for the middy framework",
   "type": "module",
   "engines": {
@@ -209,8 +209,8 @@
     "pre-commit": "lint-staged",
     "lint": "prettier --write '**/*.{js,json}' && standard --fix",
     "build": "./bin/esbuild",
-    "test": "ava",
-    "prepublishOnly": "./bin/certificates"
+    "test": "node --test --experimental-test-coverage",
+    "prepublishOnly": "npm run build && ./bin/certificates"
   },
   "license": "MIT",
   "keywords": [
@@ -235,19 +235,17 @@
   },
   "homepage": "https://github.com/willfarrell/middy-rds#readme",
   "dependencies": {
-    "@middy/util": "4.0.0"
+    "@middy/util": "5.4.5"
   },
   "gitHead": "7a6c0fbb8ab71d6a2171e678697de9f237568431",
   "devDependencies": {
-    "@aws-sdk/rds-signer": "^3.199.0",
-    "@commitlint/cli": "^17.0.0",
-    "@commitlint/config-conventional": "^17.0.0",
-    "ava": "^5.0.0",
-    "c8": "^7.0.0",
-    "esbuild": "^0.15.12",
-    "husky": "^8.0.0",
-    "lint-staged": "^13.0.0",
-    "prettier": "^2.0.0",
+    "@aws-sdk/rds-signer": "^3.0.0",
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "esbuild": "^0.23.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.0.0",
     "standard": "^17.0.0"
   }
 }
