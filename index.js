@@ -1,13 +1,15 @@
-import knexRDS from './clients/knex.js'
-import pgRDS from './clients/pg.js'
-import postgresRDS from './clients/postgres.js'
+// Copyright 2026 will Farrell, and middy-rds contributors.
+// SPDX-License-Identifier: MIT
+import knexRDS from "./clients/knex.js";
+import pgRDS from "./clients/pg.js";
+import postgresRDS from "./clients/postgres.js";
 
-export const knexRDSMiddleware = knexRDS
-export const pgRDSMiddleware = pgRDS
-export const postgresRDSMiddleware = postgresRDS
+export const knexRDSMiddleware = knexRDS;
+export const pgRDSMiddleware = pgRDS;
+export const postgresRDSMiddleware = postgresRDS;
 
 export default {
-  knexRDSMiddleware,
-  pgRDSMiddleware,
-  postgresRDSMiddleware
-}
+	knexRDSMiddleware,
+	pgRDSMiddleware,
+	postgresRDSMiddleware,
+};

@@ -10,17 +10,29 @@
 
 <div align="center">
 <p>
-  <a href="http://badge.fury.io/js/%40willfarrell%2Fmiddy-rds">
-    <img src="https://badge.fury.io/js/%40willfarrell%2Fmiddy-rds.svg" alt="npm version" style="max-width:100%;">
+  <a href="https://www.npmjs.com/package/middy-rds">
+    <img src="https://img.shields.io/npm/v/middy-rds.svg" alt="npm version" style="max-width:100%;">
   </a>
-  <a href="https://snyk.io/test/github/willfarrell/middy-rds">
-    <img src="https://snyk.io/test/github/willfarrell/middy-rds/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/willfarrell/middy-rds" style="max-width:100%;">
+  <a href="https://www.npmjs.com/package/middy-rds">
+    <img src="https://img.shields.io/npm/dm/middy-rds.svg" alt="npm downloads" style="max-width:100%;">
   </a>
-  <a href="https://standardjs.com/">
-    <img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="Standard Code Style"  style="max-width:100%;">
+  <a href="https://github.com/willfarrell/middy-rds/actions/workflows/test-unit.yml">
+    <img src="https://github.com/willfarrell/middy-rds/actions/workflows/test-unit.yml/badge.svg" alt="GitHub Actions unit test status">
   </a>
-  <a href="https://gitter.im/middyjs/Lobby">
-    <img src="https://badges.gitter.im/gitterHQ/gitter.svg" alt="Chat on Gitter"  style="max-width:100%;">
+  <a href="https://github.com/willfarrell/middy-rds/actions/workflows/test-lint.yml">
+    <img src="https://github.com/willfarrell/middy-rds/actions/workflows/test-lint.yml/badge.svg" alt="GitHub Actions lint test status">
+  </a>
+  <a href="https://github.com/willfarrell/middy-rds/actions/workflows/test-sast.yml">
+    <img src="https://github.com/willfarrell/middy-rds/actions/workflows/test-sast.yml/badge.svg" alt="GitHub Actions SAST test status">
+  </a>
+  <a href="https://securityscorecards.dev/viewer/?uri=github.com/willfarrell/middy-rds">
+    <img src="https://api.securityscorecards.dev/projects/github.com/willfarrell/middy-rds/badge" alt="OSSF Scorecard">
+  </a>
+  <a href="https://biomejs.dev">
+    <img src="https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome" alt="Checked with Biome">
+  </a>
+  <a href="https://conventionalcommits.org">
+    <img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Conventional Commits">
   </a>
 </p>
 </div>
@@ -203,6 +215,3 @@ Everyone is very welcome to contribute to this repository. Feel free to [raise i
 
 Licensed under [MIT License](LICENSE). Copyright (c) 2017-2022 will Farrell and the [Middy team](https://github.com/middyjs/middy/graphs/contributors).
 
-<a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fmiddyjs%2Fmiddy?ref=badge_large">
-  <img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmiddyjs%2Fmiddy.svg?type=large" alt="FOSSA Status"  style="max-width:100%;">
-</a>
