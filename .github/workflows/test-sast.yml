@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   lockfile-lint:
-    name: 'lockfile-lint'
+    name: 'lockfile-lint: SAST package-lock.json'
     runs-on: ubuntu-latest
     if: (github.actor != 'dependabot[bot]')
     steps:

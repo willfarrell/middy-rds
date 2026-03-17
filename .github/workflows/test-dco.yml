@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   dco:
-    name: Tests (dco)
+    name: DCO
     runs-on: ubuntu-latest
     steps:
       - name: Check for Developer Certificate of Origin (DCO) compliance
