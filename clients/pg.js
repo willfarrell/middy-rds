@@ -1,75 +1,79 @@
-import { canPrefetch, getInternal, processCache, clearCache } from '@middy/util'
+// Copyright 2026 will Farrell, and middy-rds contributors.
+// SPDX-License-Identifier: MIT
+import { canPrefetch, getInternal, processCache } from "@middy/util";
 
-import iamToken from '../lib/iam-token.js'
-import ssl from '../lib/ssl.js'
+import iamToken from "../lib/iam-token.js";
+import ssl from "../lib/ssl.js";
 
 const defaults = {
-  client: undefined,
-  config: {},
-  internalData: undefined,
-  contextKey: 'sql',
-  disablePrefetch: false,
-  cacheKey: 'rds',
-  cachePasswordKey: 'rds',
-  cacheExpiry: -1
-}
+	client: undefined,
+	config: {},
+	forceConnection: false,
+	internalData: undefined,
+	contextKey: "rds",
+	disablePrefetch: false,
+	cacheKey: "rds",
+	cacheExpiry: 15 * 60 * 1000 - 1, // IAM token lasts for 15min
+};
 
-const defaultConnection = { ssl }
+const defaultConnection = {
+	application_name: process.env.AWS_LAMBDA_FUNCTION_NAME,
+	ssl,
+};
 
 const rdsMiddleware = (opts = {}) => {
-  const options = { ...defaults, ...opts }
-  if (!options.client) throw new Error('client option missing')
+	const options = { ...defaults, ...opts };
+	if (!options.client) throw new Error("client option missing");
+	defaultConnection.ssl = ssl(options.ssl);
 
-  const fetch = async (request) => {
-    const values = await getInternal(options.internalData, request)
-    options.config = { ...defaultConnection, ...options.config, ...values }
-    if (!options.config.port) {
-      options.config.port = Number.parseInt(process.env.PGPORT ?? 5432)
-    }
-    if (!options.config.password) {
-      options.config.password = await iamToken(options.config)
-    }
+	const fetch = async (request) => {
+		const values = await getInternal(options.internalData, request);
+		options.config = {
+			...defaultConnection,
+			...options.config,
+			...values,
+			ssl: { ...defaultConnection.ssl, ...options.config.ssl },
+		};
 
-    const Client = options.client
-    const pool = new Client(options.config)
+		options.config.port ??= Number.parseInt(process.env.PGPORT ?? 5432, 10);
+		options.config.password ??= await iamToken(options.config);
 
-    // cache the connection, not the credentials as they change over time
-    return pool
-      .connect()
-      .catch((e) => {
-        // Connection failed for some reason
-        // log and clear cache, force re-connect
-        clearCache([options.cachePasswordKey])
-        clearCache([options.cacheKey])
-        prefetch = undefined
-        throw new Error(e.message) // createError(500, e.message)
-      })
-      .finally(() => {
-        options.config.password = undefined
-      })
-  }
+		const Client = options.client;
+		const pool = new Client(options.config);
+		options.config.password = undefined;
+		if (options.forceConnection) {
+			await pool.query("SELECT 1");
+		}
+		return pool;
+	};
 
-  let prefetch
-  if (canPrefetch(options)) {
-    prefetch = processCache(options, fetch)
-  }
+	if (canPrefetch(options)) {
+		processCache(options, fetch);
+	}
 
-  const rdsMiddlewareBefore = async (request) => {
-    const { value } = prefetch ?? processCache(options, fetch, request)
-    Object.assign(request.context, { [options.contextKey]: await value }) // await due to fetch being a promise
-  }
-  const rdsMiddlewareAfter = async (request) => {
-    if (options.cacheExpiry === 0) {
-      await request.context[options.contextKey].end()
-    }
-  }
-  const rdsMiddlewareOnError = rdsMiddlewareAfter
+	const rdsMiddlewareBefore = async (request) => {
+		const { value } = processCache(options, fetch, request);
+		Object.assign(request.context, {
+			[options.contextKey]: await value, // for transactions, use `client = await pool.connect(); client.release()`
+		});
+	};
+	const rdsMiddlewareAfter = async (request) => {
+		// try/catch for if an error is thrown after this ran the first time
+		try {
+			if (options.cacheExpiry === 0) {
+				await request.context[options.contextKey].end();
+			}
+		} catch (e) {
+			console.error("middy-rds: cleanup error", e);
+		}
+	};
+	const rdsMiddlewareOnError = rdsMiddlewareAfter;
 
-  return {
-    before: rdsMiddlewareBefore,
-    after: rdsMiddlewareAfter,
-    onError: rdsMiddlewareOnError
-  }
-}
+	return {
+		before: rdsMiddlewareBefore,
+		after: rdsMiddlewareAfter,
+		onError: rdsMiddlewareOnError,
+	};
+};
 
-export default rdsMiddleware
+export default rdsMiddleware;

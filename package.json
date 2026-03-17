@@ -1,99 +1,287 @@
 {
-  "name": "middy-rds",
-  "version": "4.0.1",
-  "description": "Simple RDS manager for the middy framework",
-  "type": "module",
-  "engines": {
-    "node": ">=16"
-  },
-  "engineStrict": true,
-  "publishConfig": {
-    "access": "public"
-  },
-  "main": "./index.mjs",
-  "exports": {
-    ".": {
-      "import": {
-        "default": "./index.mjs"
-      },
-      "require": {
-        "default": "./index.cjs"
-      }
-    },
-    "./knex": {
-      "import": {
-        "default": "./clients/knex.mjs"
-      },
-      "require": {
-        "default": "./clients/knex.cjs"
-      }
-    },
-    "./pg": {
-      "import": {
-        "default": "./clients/pg.mjs"
-      },
-      "require": {
-        "default": "./clients/pg.cjs"
-      }
-    },
-    "./postgres": {
-      "import": {
-        "default": "./clients/postgres.mjs"
-      },
-      "require": {
-        "default": "./clients/postgres.cjs"
-      }
-    }
-  },
-  "files": [
-    "index.mjs",
-    "index.cjs",
-    "clients/*"
-  ],
-  "scripts": {
-    "prepare": "husky install",
-    "commit-msg": "commitlint --config commitlint.config.cjs --edit",
-    "pre-commit": "lint-staged",
-    "lint": "prettier --write '**/*.{js,json}' && standard --fix",
-    "build": "./bin/esbuild",
-    "test": "ava"
-  },
-  "license": "MIT",
-  "keywords": [
-    "Lambda",
-    "Middleware",
-    "Serverless",
-    "Framework",
-    "AWS",
-    "AWS Lambda",
-    "RDS"
-  ],
-  "author": {
-    "name": "Contributors",
-    "url": "https://github.com/willfarrell/middy-rds/graphs/contributors"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/willfarrell/middy-rds.git"
-  },
-  "bugs": {
-    "url": "https://github.com/willfarrell/middy-rds/issues"
-  },
-  "homepage": "https://github.com/willfarrell/middy-rds#readme",
-  "dependencies": {
-    "@middy/util": "4.0.0"
-  },
-  "gitHead": "7a6c0fbb8ab71d6a2171e678697de9f237568431",
-  "devDependencies": {
-    "@aws-sdk/rds-signer": "^3.199.0",
-    "@commitlint/cli": "^17.0.0",
-    "@commitlint/config-conventional": "^17.0.0",
-    "ava": "^5.0.0",
-    "c8": "^7.0.0",
-    "esbuild": "^0.15.12",
-    "husky": "^8.0.0",
-    "lint-staged": "^13.0.0",
-    "prettier": "^2.0.0",
-    "standard": "^17.0.0"
-  }
+	"name": "middy-rds",
+	"version": "6.0.0",
+	"description": "Simple RDS manager for the middy framework",
+	"workspaces": [
+		".github"
+	],
+	"type": "module",
+	"engines": {
+		"node": ">=24"
+	},
+	"engineStrict": true,
+	"publishConfig": {
+		"access": "public"
+	},
+	"main": "./index.mjs",
+	"exports": {
+		".": {
+			"import": {
+				"default": "./index.mjs"
+			}
+		},
+		"./knex": {
+			"import": {
+				"default": "./clients/knex.mjs"
+			}
+		},
+		"./pg": {
+			"import": {
+				"default": "./clients/pg.mjs"
+			}
+		},
+		"./postgres": {
+			"import": {
+				"default": "./clients/postgres.mjs"
+			}
+		},
+		"./ca": {
+			"import": {
+				"default": "./ca.js"
+			}
+		},
+		"./certificates/global": {
+			"import": {
+				"default": "./certificates/global.js"
+			}
+		},
+		"./certificates/us-east-1": {
+			"import": {
+				"default": "./certificates/us-east-1.js"
+			}
+		},
+		"./certificates/us-east-2": {
+			"import": {
+				"default": "./certificates/us-east-2.js"
+			}
+		},
+		"./certificates/us-west-1": {
+			"import": {
+				"default": "./certificates/us-west-1.js"
+			}
+		},
+		"./certificates/us-west-2": {
+			"import": {
+				"default": "./certificates/us-west-2.js"
+			}
+		},
+		"./certificates/af-south-1": {
+			"import": {
+				"default": "./certificates/af-south-1.js"
+			}
+		},
+		"./certificates/ap-east-1": {
+			"import": {
+				"default": "./certificates/ap-east-1.js"
+			}
+		},
+		"./certificates/ap-south-2": {
+			"import": {
+				"default": "./certificates/ap-south-2.js"
+			}
+		},
+		"./certificates/ap-southeast-3": {
+			"import": {
+				"default": "./certificates/ap-southeast-3.js"
+			}
+		},
+		"./certificates/ap-southeast-4": {
+			"import": {
+				"default": "./certificates/ap-southeast-4.js"
+			}
+		},
+		"./certificates/ap-south-1": {
+			"import": {
+				"default": "./certificates/ap-south-1.js"
+			}
+		},
+		"./certificates/ap-northeast-3": {
+			"import": {
+				"default": "./certificates/ap-northeast-3.js"
+			}
+		},
+		"./certificates/ap-northeast-1": {
+			"import": {
+				"default": "./certificates/ap-northeast-1.js"
+			}
+		},
+		"./certificates/ap-northeast-2": {
+			"import": {
+				"default": "./certificates/ap-northeast-2.js"
+			}
+		},
+		"./certificates/ap-southeast-1": {
+			"import": {
+				"default": "./certificates/ap-southeast-1.js"
+			}
+		},
+		"./certificates/ap-southeast-2": {
+			"import": {
+				"default": "./certificates/ap-southeast-2.js"
+			}
+		},
+		"./certificates/ca-central-1": {
+			"import": {
+				"default": "./certificates/ca-central-1.js"
+			}
+		},
+		"./certificates/ca-west-1": {
+			"import": {
+				"default": "./certificates/ca-west-1.js"
+			}
+		},
+		"./certificates/eu-central-1": {
+			"import": {
+				"default": "./certificates/eu-central-1.js"
+			}
+		},
+		"./certificates/eu-west-1": {
+			"import": {
+				"default": "./certificates/eu-west-1.js"
+			}
+		},
+		"./certificates/eu-west-2": {
+			"import": {
+				"default": "./certificates/eu-west-2.js"
+			}
+		},
+		"./certificates/eu-south-1": {
+			"import": {
+				"default": "./certificates/eu-south-1.js"
+			}
+		},
+		"./certificates/eu-west-3": {
+			"import": {
+				"default": "./certificates/eu-west-3.js"
+			}
+		},
+		"./certificates/eu-south-2": {
+			"import": {
+				"default": "./certificates/eu-south-2.js"
+			}
+		},
+		"./certificates/eu-north-1": {
+			"import": {
+				"default": "./certificates/eu-north-1.js"
+			}
+		},
+		"./certificates/eu-central-2": {
+			"import": {
+				"default": "./certificates/eu-central-2.js"
+			}
+		},
+		"./certificates/il-central-1": {
+			"import": {
+				"default": "./certificates/il-central-1.js"
+			}
+		},
+		"./certificates/me-south-1": {
+			"import": {
+				"default": "./certificates/me-south-1.js"
+			}
+		},
+		"./certificates/me-central-1": {
+			"import": {
+				"default": "./certificates/me-central-1.js"
+			}
+		},
+		"./certificates/sa-east-1": {
+			"import": {
+				"default": "./certificates/sa-east-1.js"
+			}
+		},
+		"./certificates/us-gov-east-1": {
+			"import": {
+				"default": "./certificates/us-gov-east-1.js"
+			}
+		},
+		"./certificates/us-gov-west-1": {
+			"import": {
+				"default": "./certificates/us-gov-west-1.js"
+			}
+		}
+	},
+	"files": [
+		"index.mjs",
+		"clients/*",
+		"lib/*",
+		"ca.js",
+		"certificates/*"
+	],
+	"scripts": {
+		"prepare": "husky",
+		"git:pre-commit": "npm run git:lint-staged && npm run git:test-staged",
+		"git:commit-msg": "commitlint --config commitlint.config.cjs --edit",
+		"git:lint-staged": "npm run test:lint",
+		"git:unit-staged": "npm run test:unit",
+		"git:test-staged": "npm run git:unit-staged",
+		"lint": "biome check --write --no-errors-on-unmatched",
+		"test": "npm run test:lint && npm run test:unit && npm run test:types && npm run test:sast && npm run test:perf && npm run test:dast",
+		"test:sast": "npm run test:sast:license && npm run test:sast:lockfile && npm run test:sast:semgrep && npm run test:sast:trufflehog && npm run test:sast:trivy",
+		"test:sast:license": "license-check-and-add check -f license.json",
+		"test:sast:lockfile": "lockfile-lint --path package-lock.json --type npm --allowed-hosts npm --validate-https",
+		"test:sast:semgrep": "semgrep scan --config auto",
+		"test:sast:trivy": "trivy fs --scanners vuln,license --include-dev-deps --ignored-licenses 0BSD,Apache-2.0,BSD-1-Clause,BSD-2-Clause,BSD-3-Clause,CC0-1.0,CC-BY-4.0,ISC,MIT,Python-2.0 --exit-code 1 --disable-telemetry .",
+		"test:sast:trufflehog": "trufflehog filesystem --only-verified --log-level=-1 ./",
+		"test:lint": "biome check --staged --no-errors-on-unmatched",
+		"test:unit": "node --experimental-test-module-mocks --test --test-force-exit --experimental-test-coverage --test-coverage-lines=95 --test-coverage-branches=90 --test-coverage-functions=95 --test-coverage-exclude=certificates/** --test-coverage-exclude=bin/** --test-coverage-exclude=**/*.cjs --test-coverage-exclude=**/*.mjs",
+		"test:types": "tstyche",
+		"test:perf": "node --test --test-concurrency=1 ./**/*.perf.js",
+		"test:dast": "npm run test:dast:fuzz",
+		"test:dast:fuzz": "node --test ./**/*.fuzz.js",
+		"build": "./bin/esbuild",
+		"prepublishOnly": "npm run build && ./bin/certificates",
+		"release:license:add": "license-check-and-add add -f license.json",
+		"release:license:remove": "license-check-and-add remove -f license.json"
+	},
+	"license": "MIT",
+	"keywords": [
+		"Lambda",
+		"Middleware",
+		"Serverless",
+		"Framework",
+		"AWS",
+		"AWS Lambda",
+		"RDS"
+	],
+	"author": {
+		"name": "Contributors",
+		"url": "https://github.com/willfarrell/middy-rds/graphs/contributors"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/willfarrell/middy-rds.git"
+	},
+	"bugs": {
+		"url": "https://github.com/willfarrell/middy-rds/issues"
+	},
+	"homepage": "https://github.com/willfarrell/middy-rds#readme",
+	"funding": {
+		"type": "github",
+		"url": "https://github.com/sponsors/willfarrell"
+	},
+	"dependencies": {
+		"@middy/util": "7.1.7"
+	},
+	"peerDependencies": {
+		"@aws-sdk/rds-signer": "^3.0.0"
+	},
+	"peerDependenciesMeta": {
+		"@aws-sdk/rds-signer": {
+			"optional": true
+		}
+	},
+	"gitHead": "7a6c0fbb8ab71d6a2171e678697de9f237568431",
+	"devDependencies": {
+		"@aws-sdk/rds-signer": "^3.0.0",
+		"@biomejs/biome": "2.4.7",
+		"@commitlint/cli": "^20.0.0",
+		"@commitlint/config-conventional": "^20.0.0",
+		"esbuild": "^0.27.0",
+		"fast-check": "^4.0.0",
+		"husky": "^9.0.0",
+		"license-check-and-add": "4.0.5",
+		"tinybench": "^6.0.0",
+		"tstyche": "^6.0.0"
+	}
 }
