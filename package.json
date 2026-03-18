@@ -261,7 +261,7 @@
 		"url": "https://github.com/sponsors/willfarrell"
 	},
 	"dependencies": {
-		"@middy/util": "7.1.7"
+		"@middy/util": "7.1.8"
 	},
 	"peerDependencies": {
 		"@aws-sdk/rds-signer": "^3.0.0"
@@ -277,7 +277,7 @@
 	},
 	"devDependencies": {
 		"@aws-sdk/rds-signer": "^3.0.0",
-		"@biomejs/biome": "2.4.7",
+		"@biomejs/biome": "2.4.8",
 		"@commitlint/cli": "^20.0.0",
 		"@commitlint/config-conventional": "^20.0.0",
 		"esbuild": "^0.27.0",
