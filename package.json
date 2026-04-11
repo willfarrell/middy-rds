@@ -274,14 +274,14 @@
 	"gitHead": "7a6c0fbb8ab71d6a2171e678697de9f237568431",
 	"devDependencies": {
 		"@aws-sdk/rds-signer": "^3.0.0",
-		"@biomejs/biome": "2.4.8",
+		"@biomejs/biome": "2.4.11",
 		"@commitlint/cli": "^20.0.0",
 		"@commitlint/config-conventional": "^20.0.0",
-		"esbuild": "^0.27.0",
+		"esbuild": "^0.28.0",
 		"fast-check": "^4.0.0",
 		"husky": "^9.0.0",
 		"license-check-and-add": "4.0.5",
 		"tinybench": "^6.0.0",
-		"tstyche": "^6.0.0"
+		"tstyche": "^7.0.0"
 	}
 }
