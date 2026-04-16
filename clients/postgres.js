@@ -16,11 +16,16 @@ const defaults = {
 	cacheExpiry: 15 * 60 * 1000 - 1, // IAM token lasts for 15min
 };
 
-const defaultConnection = { ssl };
+const defaultConnection = {
+	ssl,
+	application_name: process.env.AWS_LAMBDA_FUNCTION_NAME,
+};
 
 const rdsMiddleware = (opts = {}) => {
 	const options = { ...defaults, ...opts };
 	if (!options.client) throw new Error("client option missing");
+
+	const sslConfig = ssl(options.ssl);
 
 	const fetch = async (request) => {
 		const values = await getInternal(options.internalData, request);
@@ -28,7 +33,7 @@ const rdsMiddleware = (opts = {}) => {
 			...defaultConnection,
 			...options.config,
 			...values,
-			ssl: { ...defaultConnection.ssl, ...options.config.ssl },
+			ssl: { ...sslConfig, ...options.config.ssl },
 		};
 
 		options.config.port ??= Number.parseInt(process.env.PGPORT ?? 5432, 10);
@@ -52,8 +57,12 @@ const rdsMiddleware = (opts = {}) => {
 		Object.assign(request.context, { [options.contextKey]: await value }); // await due to fetch being a promise
 	};
 	const rdsMiddlewareAfter = async (request) => {
-		if (options.cacheExpiry === 0) {
-			await request.context[options.contextKey].end();
+		try {
+			if (options.cacheExpiry === 0) {
+				await request.context[options.contextKey].end();
+			}
+		} catch (e) {
+			console.error("middy-rds: cleanup error", e);
 		}
 	};
 	const rdsMiddlewareOnError = rdsMiddlewareAfter;

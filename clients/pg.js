@@ -24,7 +24,7 @@ const defaultConnection = {
 const rdsMiddleware = (opts = {}) => {
 	const options = { ...defaults, ...opts };
 	if (!options.client) throw new Error("client option missing");
-	defaultConnection.ssl = ssl(options.ssl);
+	const sslConfig = ssl(options.ssl);
 
 	const fetch = async (request) => {
 		const values = await getInternal(options.internalData, request);
@@ -32,7 +32,7 @@ const rdsMiddleware = (opts = {}) => {
 			...defaultConnection,
 			...options.config,
 			...values,
-			ssl: { ...defaultConnection.ssl, ...options.config.ssl },
+			ssl: { ...sslConfig, ...options.config.ssl },
 		};
 
 		options.config.port ??= Number.parseInt(process.env.PGPORT ?? 5432, 10);
@@ -47,12 +47,13 @@ const rdsMiddleware = (opts = {}) => {
 		return pool;
 	};
 
+	let prefetch;
 	if (canPrefetch(options)) {
-		processCache(options, fetch);
+		prefetch = processCache(options, fetch);
 	}
 
 	const rdsMiddlewareBefore = async (request) => {
-		const { value } = processCache(options, fetch, request);
+		const { value } = prefetch ?? processCache(options, fetch, request);
 		Object.assign(request.context, {
 			[options.contextKey]: await value, // for transactions, use `client = await pool.connect(); client.release()`
 		});

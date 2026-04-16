@@ -48,8 +48,12 @@ describe("knex middleware", () => {
 		});
 	});
 
-	it("should throw if port is missing", async () => {
-		const mockClient = mock.fn(() => mockKnex);
+	it("should default port to 5432 if not provided", async () => {
+		const mockClient = mock.fn((config) => {
+			capturedConfig = { ...config, connection: { ...config.connection } };
+			return mockKnex;
+		});
+		let capturedConfig;
 		const middleware = knexMiddleware({
 			client: mockClient,
 			config: {
@@ -62,9 +66,9 @@ describe("knex middleware", () => {
 		});
 
 		const request = { context: {} };
-		await assert.rejects(() => middleware.before(request), {
-			message: "port missing",
-		});
+		await middleware.before(request);
+
+		assert.equal(capturedConfig.connection.port, 5432);
 	});
 
 	it("should create knex instance and attach to context", async () => {
@@ -89,7 +93,11 @@ describe("knex middleware", () => {
 	});
 
 	it("should use IAM token when no password provided", async () => {
-		const mockClient = mock.fn(() => mockKnex);
+		let capturedConfig;
+		const mockClient = mock.fn((config) => {
+			capturedConfig = { ...config, connection: { ...config.connection } };
+			return mockKnex;
+		});
 		const middleware = knexMiddleware({
 			client: mockClient,
 			config: {
@@ -104,8 +112,9 @@ describe("knex middleware", () => {
 		const request = { context: {} };
 		await middleware.before(request);
 
-		const callArgs = mockClient.mock.calls[0].arguments[0];
-		assert.ok(callArgs.connection.password.includes("X-Amz-Security-Token="));
+		assert.ok(
+			capturedConfig.connection.password.includes("X-Amz-Security-Token="),
+		);
 	});
 
 	it("should force connection when forceConnection is true", async () => {
