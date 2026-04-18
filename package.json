@@ -218,7 +218,7 @@
 		"lint": "biome check --write --no-errors-on-unmatched",
 		"test": "npm run test:lint && npm run test:unit && npm run test:types && npm run test:sast && npm run test:perf && npm run test:dast",
 		"test:sast": "npm run test:sast:license && npm run test:sast:lockfile && npm run test:sast:semgrep && npm run test:sast:trufflehog && npm run test:sast:trivy",
-		"test:sast:license": "license-check-and-add check -f license.json",
+		"test:sast:license": "license-check-and-add check -f .license.config.json",
 		"test:sast:lockfile": "lockfile-lint --path package-lock.json --type npm --allowed-hosts npm --validate-https",
 		"test:sast:semgrep": "semgrep scan --config auto",
 		"test:sast:trivy": "trivy fs --scanners vuln,license --include-dev-deps --ignored-licenses 0BSD,Apache-2.0,BSD-1-Clause,BSD-2-Clause,BSD-3-Clause,CC0-1.0,CC-BY-4.0,ISC,MIT,Python-2.0 --exit-code 1 --disable-telemetry .",
@@ -231,8 +231,8 @@
 		"test:dast:fuzz": "node --test ./**/*.fuzz.js",
 		"build": "./bin/esbuild",
 		"prepublishOnly": "npm run build && ./bin/certificates",
-		"release:license:add": "license-check-and-add add -f license.json",
-		"release:license:remove": "license-check-and-add remove -f license.json"
+		"release:license:add": "license-check-and-add add -f .license.config.json",
+		"release:license:remove": "license-check-and-add remove -f .license.config.json"
 	},
 	"license": "MIT",
 	"keywords": [
@@ -261,7 +261,7 @@
 		"url": "https://github.com/sponsors/willfarrell"
 	},
 	"dependencies": {
-		"@middy/util": "7.2.3"
+		"@middy/util": "7.1.7"
 	},
 	"peerDependencies": {
 		"@aws-sdk/rds-signer": "^3.0.0"
@@ -274,14 +274,14 @@
 	"gitHead": "7a6c0fbb8ab71d6a2171e678697de9f237568431",
 	"devDependencies": {
 		"@aws-sdk/rds-signer": "^3.0.0",
-		"@biomejs/biome": "2.4.12",
+		"@biomejs/biome": "2.4.7",
 		"@commitlint/cli": "^20.0.0",
 		"@commitlint/config-conventional": "^20.0.0",
-		"esbuild": "^0.28.0",
+		"esbuild": "^0.27.0",
 		"fast-check": "^4.0.0",
 		"husky": "^9.0.0",
 		"license-check-and-add": "4.0.5",
 		"tinybench": "^6.0.0",
-		"tstyche": "^7.0.0"
+		"tstyche": "^6.0.0"
 	}
 }
