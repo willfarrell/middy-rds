@@ -209,7 +209,7 @@
 		"certificates/*"
 	],
 	"scripts": {
-		"prepare": "husky",
+		"prepare": "husky || true",
 		"git:pre-commit": "npm run git:lint-staged && npm run git:test-staged",
 		"git:commit-msg": "commitlint --config commitlint.config.cjs --edit",
 		"git:lint-staged": "npm run test:lint",
