@@ -261,7 +261,7 @@
 		"url": "https://github.com/sponsors/willfarrell"
 	},
 	"dependencies": {
-		"@middy/util": "7.3.1"
+		"@middy/util": "7.3.2"
 	},
 	"peerDependencies": {
 		"@aws-sdk/rds-signer": "^3.0.0"
@@ -283,5 +283,8 @@
 		"license-check-and-add": "4.0.5",
 		"tinybench": "^6.0.0",
 		"tstyche": "^7.0.0"
+	},
+	"overrides": {
+		"fast-xml-parser": "^5.7.0"
 	}
 }
