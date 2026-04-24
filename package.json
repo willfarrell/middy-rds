@@ -274,7 +274,7 @@
 	"gitHead": "7a6c0fbb8ab71d6a2171e678697de9f237568431",
 	"devDependencies": {
 		"@aws-sdk/rds-signer": "^3.0.0",
-		"@biomejs/biome": "2.4.12",
+		"@biomejs/biome": "2.4.13",
 		"@commitlint/cli": "^20.0.0",
 		"@commitlint/config-conventional": "^20.0.0",
 		"esbuild": "^0.28.0",
@@ -284,7 +284,5 @@
 		"tinybench": "^6.0.0",
 		"tstyche": "^7.0.0"
 	},
-	"overrides": {
-		"fast-xml-parser": "^5.7.0"
-	}
+	"overrides": {}
 }
