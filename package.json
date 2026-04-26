@@ -261,7 +261,7 @@
 		"url": "https://github.com/sponsors/willfarrell"
 	},
 	"dependencies": {
-		"@middy/util": "7.3.2"
+		"@middy/util": "7.3.3"
 	},
 	"peerDependencies": {
 		"@aws-sdk/rds-signer": "^3.0.0"
