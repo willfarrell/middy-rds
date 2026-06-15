@@ -277,7 +277,7 @@
 		"@biomejs/biome": "2.4.7",
 		"@commitlint/cli": "^20.0.0",
 		"@commitlint/config-conventional": "^20.0.0",
-		"esbuild": "^0.27.0",
+		"esbuild": "^0.28.1",
 		"fast-check": "^4.0.0",
 		"husky": "^9.0.0",
 		"license-check-and-add": "4.0.5",
